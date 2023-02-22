@@ -1,4 +1,4 @@
-#read file and eval will eveluate file content
+
 input_file = File.open("array.txt")
 input_array = eval(input_file.read)
 
