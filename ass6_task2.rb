@@ -6,15 +6,14 @@ def phonebook_manager
     puts "2. Save a new number"
     puts "3. Delete a number"
 
-
-
     print "Enter your choice: "
     choice = gets.chomp.to_i
 
    
     case choice
     when 1
-      print "Enter the person's name: "
+      proc = Proc.new{print "Enter the person's name: "}
+      proc.call
       name = gets.chomp
       number = find_number_by_name(name)
       if number
@@ -23,26 +22,28 @@ def phonebook_manager
         puts "No phone number found for #{name}."
       end
     when 2
-      print "Enter the person's name: "
+      proc = Proc.new{print "Enter the person's name: "}
+      proc.call
       name = gets.chomp
-      print "Enter the phone number: "
-      number = gets.chomp
-      save_number(name, number)
-      puts "Phone number saved."
+      save_number(name)
+      
     when 3
-      print "Delete by name or by number? (n/nm): "
+      proc = Proc.new{print "Delete by name or by number? (n/nm): "}
+      proc.call
       choice = gets.chomp.downcase
       case choice
       when "n"
-        print "Enter the person's name: "
+        proc = Proc.new{print "Enter the person's name: "}
+         proc.call
         name = gets.chomp
-        delete_number(name)
-        puts "Phone number deleted."
+        delete_number_by_n(name)
+
       when "nm"
-        print "Enter the phone number: "
+        proc = Proc.new{print "Enter the phone number: "}
+         proc.call
         number = gets.chomp
-        delete_number(number)
-        puts "Phone number deleted."
+        delete_number_by_nm(number)
+        
       end
       end
      
@@ -52,23 +53,54 @@ end
 
 
 def find_number_by_name(name)
+
   phonebook = load_phonebook()
+  if phonebook[name]
+    puts "#{name}'s number is #{phonebook[name]}"
+  else
+    puts "Could not find #{name} in phonebook."
+  end
   phonebook[name]
 end
 
-def save_number(name, number)
+def save_number(name)
   phonebook = load_phonebook()
-  phonebook[name] = number
-  save_phonebook(phonebook)
+  
+  if phonebook.has_key?(name)
+    puts "Name already exists"
+    
+  else
+    print "Enter the phone number: "
+    number = gets.chomp
+    phonebook[name] = number
+    puts "phone-number saved"
+    save_phonebook(phonebook)
+  end
+  
 end
 
-def delete_number(search_term)
+
+def delete_number_by_n(search_term)
   phonebook = load_phonebook()
 
   if phonebook.has_key?(search_term)
     phonebook.delete(search_term)
+    puts "Phone number deleted."
   else
-    phonebook.delete_if { |name, number| number == search_term }
+    puts "Record not found!"
+  end
+
+  save_phonebook(phonebook)
+end
+
+def delete_number_by_nm(search_term)
+  phonebook = load_phonebook()
+
+  if phonebook.has_key?(phonebook.key(search_term))
+    phonebook.delete(search_term)
+    puts "Phone number deleted."
+  else
+    puts "Record not found!"
   end
 
   save_phonebook(phonebook)
